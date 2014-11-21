@@ -1,3 +1,7 @@
+#ignore bin & obj
+bin/
+obj/
+
 # Windows image file caches
 Thumbs.db
 ehthumbs.db
