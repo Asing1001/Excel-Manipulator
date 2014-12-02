@@ -51,6 +51,7 @@
             this.DataCount_BeChanged = new System.Windows.Forms.Label();
             this.DataCount_CantMatch = new System.Windows.Forms.Label();
             this.DataCount_Merge = new System.Windows.Forms.Label();
+            this.Excel2JSON = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView3)).BeginInit();
@@ -260,11 +261,22 @@
             this.DataCount_Merge.TabIndex = 23;
             this.DataCount_Merge.Text = "DataCount : ";
             // 
+            // Excel2JSON
+            // 
+            this.Excel2JSON.Location = new System.Drawing.Point(277, 7);
+            this.Excel2JSON.Name = "Excel2JSON";
+            this.Excel2JSON.Size = new System.Drawing.Size(118, 23);
+            this.Excel2JSON.TabIndex = 24;
+            this.Excel2JSON.Text = "Export this to JSON";
+            this.Excel2JSON.UseVisualStyleBackColor = true;
+            this.Excel2JSON.Click += new System.EventHandler(this.Excel2JSON_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1166, 562);
+            this.Controls.Add(this.Excel2JSON);
             this.Controls.Add(this.DataCount_Merge);
             this.Controls.Add(this.DataCount_CantMatch);
             this.Controls.Add(this.DataCount_BeChanged);
@@ -324,6 +336,7 @@
         private System.Windows.Forms.Label DataCount_BeChanged;
         private System.Windows.Forms.Label DataCount_CantMatch;
         private System.Windows.Forms.Label DataCount_Merge;
+        private System.Windows.Forms.Button Excel2JSON;
     }
 }
 

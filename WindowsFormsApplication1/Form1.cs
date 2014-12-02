@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Data;
+using System.Diagnostics;
+using System.IO;
 using System.Windows.Forms;
 using System.Data.OleDb;
 
@@ -7,13 +9,13 @@ namespace WindowsFormsApplication1
 {
     public partial class Form1 : Form
     {
-        XmlHelper xmlHelper = new XmlHelper();
-        ExcelHandler excelHandler = new ExcelHandler();
-        DataTable dtMine = new DataTable();
-        DataTable dtTheir = new DataTable();
-        DataTable dtCantMatch = new DataTable();
-        DataTable mergeDataTable = new DataTable();
-        FolderBrowserDialog dialog = new FolderBrowserDialog();
+        private XmlHelper xmlHelper = new XmlHelper();
+        private ExcelHandler excelHandler = new ExcelHandler();
+        private DataTable dtMine = new DataTable();
+        private DataTable dtTheir = new DataTable();
+        private DataTable dtCantMatch = new DataTable();
+        private DataTable mergeDataTable = new DataTable();
+        private FolderBrowserDialog dialog = new FolderBrowserDialog();
 
         public Form1()
         {
@@ -23,7 +25,7 @@ namespace WindowsFormsApplication1
         }
 
         #region Openfile to Datagridview and datatable
-        
+
         private string OpenFile()
         {
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
@@ -39,7 +41,9 @@ namespace WindowsFormsApplication1
         private DataTable GetExcelSheetNames(string filePath)
         {
             //Office 2003
-            OleDbConnection conn = new OleDbConnection(@"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + filePath + ";Extended Properties='Excel 8.0;HDR=YES;IMEX=1'");
+            OleDbConnection conn =
+                new OleDbConnection(@"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + filePath +
+                                    ";Extended Properties='Excel 8.0;HDR=YES;IMEX=1'");
 
             //Office 2007
             //OleDbConnection conn = new OleDbConnection(@"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" + filePath + ";Extended Properties='Excel 12.0 Xml;HDR=YES'");
@@ -87,12 +91,12 @@ namespace WindowsFormsApplication1
             var fileName = OpenFile();
             if (fileName != string.Empty)
             {
-                string tableName = "[Sheet1$]";//在頁簽名稱後加$，再用中括號[]包起來
-                string sql = textBox1.Text +" "+ tableName; //SQL查詢
+                string tableName = "[Sheet1$]"; //在頁簽名稱後加$，再用中括號[]包起來
+                string sql = textBox1.Text + " " + tableName; //SQL查詢
                 dtMine = GetExcelDataTable(fileName, sql);
                 //dtMine.Columns.Add("Comment");
                 dataGridView1.DataSource = dtMine;
-                DataCount_BeChanged.Text = "DataCount : "+ DataCount(dataGridView1);
+                DataCount_BeChanged.Text = "DataCount : " + DataCount(dataGridView1);
             }
         }
 
@@ -103,7 +107,7 @@ namespace WindowsFormsApplication1
             {
                 string tableName = "[Sheet1$]"; //在頁簽名稱後加$，再用中括號[]包起來
                 //string sql = "select Keys,value from " + tableName; //SQL查詢
-                string sql = textBox2.Text +" "+ tableName; //SQL查詢
+                string sql = textBox2.Text + " " + tableName; //SQL查詢
                 dtTheir = GetExcelDataTable(fileName, sql);
                 dataGridView2.DataSource = dtTheir;
                 DataCount_Correct.Text = "DataCount : " + DataCount(dataGridView2);
@@ -140,24 +144,36 @@ namespace WindowsFormsApplication1
 
             }
         }
-   
+
+        private string TrimPeriod(string s)
+        {
+            if (s.EndsWith("。") || s.EndsWith("."))
+            {
+                return s.Substring(0, s.Length - 1);
+            }
+            //return s;
+            return s.TrimEnd('。');
+        }
+
         private void RunProgram_Click(object sender, EventArgs e)
         {
             dtCantMatch = new DataTable();
             dtCantMatch.Columns.Add("keys");
             dtCantMatch.Columns.Add("japnese");
             dtCantMatch.Columns.Add("Comment");
-  
+
+
+
             foreach (DataRow row in dtMine.Rows)
             {
-                string key = "'" + row["Keys"] + "'"; //規定要加''
+                string key = "'" + row["Keys"] + "'"; //.Select()內的變數規定要加''
                 DataRow[] matchRows = dtTheir.Select("Keys=" + key);
-                if (matchRows.Length != 0)
+                if (matchRows.Length != 0) //有找到相對應資料
                 {
                     row["Comment"] = matchRows[0]["Comment"];
                     row["japanese"] = matchRows[0]["japanese"];
                 }
-                else
+                else //無資料，加入到dtCantmatch裡
                 {
                     dtCantMatch.ImportRow(row);
                 }
@@ -176,6 +192,7 @@ namespace WindowsFormsApplication1
         private void merge_Click(object sender, EventArgs e)
         {
             mergeDataTable = dtTheir.Copy();
+
             int i = 0;
             foreach (DataRow row in dtMine.Rows)
             {
@@ -188,8 +205,8 @@ namespace WindowsFormsApplication1
                 }
             }
             dataGridView4.DataSource = mergeDataTable;
-            MessageBox.Show("merge : " + i+" data.");
-            DataCount_Merge.Text = "DataCount : "+ DataCount(dataGridView4);
+            MessageBox.Show("merge : " + i + " data.");
+            DataCount_Merge.Text = "DataCount : " + DataCount(dataGridView4);
         }
 
         #region Export2Excel
@@ -198,7 +215,7 @@ namespace WindowsFormsApplication1
         {
             excelHandler.Export2Excel(mergeDataTable);
         }
-        
+
         private void ExportMine_Click(object sender, EventArgs e)
         {
             excelHandler.Export2Excel(dtMine);
@@ -216,6 +233,26 @@ namespace WindowsFormsApplication1
             Properties.Settings.Default.SQLCommand1 = textBox1.Text;
             Properties.Settings.Default.SQLCommand2 = textBox2.Text;
             Properties.Settings.Default.Save();
+        }
+
+        private void Excel2JSON_Click(object sender, EventArgs e)
+        {
+            JsonHelper jsonHelper = new JsonHelper();
+            string fullPath = @"C:\Users\andy.chen\Documents\Temp\test1.txt";
+            int count = 1;
+            string fileNameOnly = Path.GetFileNameWithoutExtension(fullPath);
+            string extension = Path.GetExtension(fullPath);
+            string path = Path.GetDirectoryName(fullPath);
+            string newFullPath = fullPath;
+
+            while (File.Exists(newFullPath))
+            {
+                string tempFileName = string.Format("{0}({1})", fileNameOnly, count++);
+                newFullPath = Path.Combine(path, tempFileName + extension);
+            }
+            Debug.WriteLine(jsonHelper.ToJSON(dtMine));
+            File.WriteAllText(newFullPath, jsonHelper.ToJSON(dtMine));
+            System.Diagnostics.Process.Start(newFullPath);
         }
     }
 }
