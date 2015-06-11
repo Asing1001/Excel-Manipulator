@@ -52,6 +52,7 @@
             this.DataCount_CantMatch = new System.Windows.Forms.Label();
             this.DataCount_Merge = new System.Windows.Forms.Label();
             this.Excel2JSON = new System.Windows.Forms.Button();
+            this.LabelModifiedCount = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView3)).BeginInit();
@@ -271,11 +272,21 @@
             this.Excel2JSON.UseVisualStyleBackColor = true;
             this.Excel2JSON.Click += new System.EventHandler(this.Excel2JSON_Click);
             // 
+            // LabelModifiedCount
+            // 
+            this.LabelModifiedCount.AutoSize = true;
+            this.LabelModifiedCount.Location = new System.Drawing.Point(815, 14);
+            this.LabelModifiedCount.Name = "LabelModifiedCount";
+            this.LabelModifiedCount.Size = new System.Drawing.Size(79, 13);
+            this.LabelModifiedCount.TabIndex = 25;
+            this.LabelModifiedCount.Text = "DataModified : ";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1166, 562);
+            this.Controls.Add(this.LabelModifiedCount);
             this.Controls.Add(this.Excel2JSON);
             this.Controls.Add(this.DataCount_Merge);
             this.Controls.Add(this.DataCount_CantMatch);
@@ -337,6 +348,7 @@
         private System.Windows.Forms.Label DataCount_CantMatch;
         private System.Windows.Forms.Label DataCount_Merge;
         private System.Windows.Forms.Button Excel2JSON;
+        private System.Windows.Forms.Label LabelModifiedCount;
     }
 }
 

@@ -161,7 +161,7 @@ namespace WindowsFormsApplication1
             dtCantMatch.Columns.Add("keys");
             dtCantMatch.Columns.Add("japnese");
             dtCantMatch.Columns.Add("Comment");
-
+            int dataBeenModified = 0;
 
 
             foreach (DataRow row in dtMine.Rows)
@@ -170,8 +170,12 @@ namespace WindowsFormsApplication1
                 DataRow[] matchRows = dtTheir.Select("Keys=" + key);
                 if (matchRows.Length != 0) //有找到相對應資料
                 {
-                    row["Comment"] = matchRows[0]["Comment"];
-                    row["japanese"] = matchRows[0]["japanese"];
+                    if (!row["japanese"].ToString().Equals(matchRows[0]["japanese"].ToString()))
+                    {
+                        row["Comment"] = matchRows[0]["Comment"];
+                        row["japanese"] = matchRows[0]["japanese"];
+                        dataBeenModified ++ ;
+                    }
                 }
                 else //無資料，加入到dtCantmatch裡
                 {
@@ -182,6 +186,7 @@ namespace WindowsFormsApplication1
             }
 
             DataCount_CantMatch.Text = "DataCount : " + DataCount(dataGridView3);
+            LabelModifiedCount.Text = dataBeenModified.ToString();
         }
 
         private string DataCount(DataGridView dgv)
